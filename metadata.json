@@ -1,0 +1,7 @@
+{
+  "name": "Bangkok Bank Expat eKYC",
+  "description": "A comprehensive Instant eKYC (Electronic Know Your Customer) web application for expatriates opening a bank account in Bangkok. It features multi-step identity verification including AI-powered passport scanning and a liveness check.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
