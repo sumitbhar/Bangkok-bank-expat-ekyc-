@@ -1,6 +1,9 @@
+
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { FormData } from '../../types';
 import DatePicker from '../DatePicker';
+import Button from '../common/Button';
+import Alert from '../common/Alert';
 
 interface Props {
     nextStep: () => void;
@@ -110,11 +113,17 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
 
     const expiryMinDate = new Date();
     expiryMinDate.setDate(expiryMinDate.getDate() + 1);
+    
+    const inputClassName = (hasError: boolean) =>
+    `mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${
+      hasError ? 'border-[--color-danger]' : 'border-[--color-border]'
+    } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring] focus:border-[--color-primary] transition-colors duration-150`;
+
 
     return (
         <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold text-[--color-text-header] mb-2">Verify Personal Information</h2>
-            <p className="text-[--color-text-body] mb-6">Please check the information extracted from your passport and correct any errors.</p>
+            <h2 className="text-3xl font-bold text-[--color-text-header] tracking-tight mb-2">Verify Personal Information</h2>
+            <p className="text-[--color-text-body] mb-8">Please check the information extracted from your passport and correct any errors.</p>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-8">
                  {/* Left Column: Passport Preview */}
@@ -124,10 +133,10 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
                         <img 
                             src={formData.documents.passport} 
                             alt="Passport Scan" 
-                            className="rounded-lg shadow-md w-full border border-[--color-border]"
+                            className="rounded-xl shadow-md w-full border border-[--color-border]"
                         />
                     ) : (
-                        <div className="w-full aspect-video bg-[--color-surface] rounded-lg flex items-center justify-center text-[--color-text-muted] border border-dashed border-[--color-border]">
+                        <div className="w-full aspect-video bg-[--color-surface] rounded-xl flex items-center justify-center text-[--color-text-muted] border border-dashed border-[--color-border]">
                             <p>Passport image not available.</p>
                         </div>
                     )}
@@ -137,12 +146,12 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
                 <form onSubmit={handleNext} className="space-y-4" noValidate>
                     <div>
                         <label htmlFor="fullName" className="block text-sm font-medium text-[--color-text-body]">Full Name</label>
-                        <input type="text" name="fullName" id="fullName" value={localData.fullName} onChange={handleChange} required className={`mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${errors.fullName ? 'border-[--color-danger]' : 'border-[--color-border]'} rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]`} aria-invalid={!!errors.fullName} aria-describedby="fullName-error"/>
+                        <input type="text" name="fullName" id="fullName" value={localData.fullName} onChange={handleChange} required className={inputClassName(!!errors.fullName)} aria-invalid={!!errors.fullName} aria-describedby="fullName-error"/>
                         {errors.fullName && <p id="fullName-error" className="mt-1 text-sm text-[--color-danger]">{errors.fullName}</p>}
                     </div>
                     <div>
                         <label htmlFor="nationality" className="block text-sm font-medium text-[--color-text-body]">Nationality</label>
-                        <input type="text" name="nationality" id="nationality" value={localData.nationality} onChange={handleChange} required className={`mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${errors.nationality ? 'border-[--color-danger]' : 'border-[--color-border]'} rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]`} aria-invalid={!!errors.nationality} aria-describedby="nationality-error"/>
+                        <input type="text" name="nationality" id="nationality" value={localData.nationality} onChange={handleChange} required className={inputClassName(!!errors.nationality)} aria-invalid={!!errors.nationality} aria-describedby="nationality-error"/>
                         {errors.nationality && <p id="nationality-error" className="mt-1 text-sm text-[--color-danger]">{errors.nationality}</p>}
                     </div>
                     <div>
@@ -157,7 +166,7 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
                     </div>
                     <div>
                         <label htmlFor="passportNumber" className="block text-sm font-medium text-[--color-text-body]">Passport Number</label>
-                        <input type="text" name="passportNumber" id="passportNumber" value={localData.passportNumber} onChange={handleChange} required className={`mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${errors.passportNumber ? 'border-[--color-danger]' : 'border-[--color-border]'} rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]`} aria-invalid={!!errors.passportNumber} aria-describedby="passportNumber-error"/>
+                        <input type="text" name="passportNumber" id="passportNumber" value={localData.passportNumber} onChange={handleChange} required className={inputClassName(!!errors.passportNumber)} aria-invalid={!!errors.passportNumber} aria-describedby="passportNumber-error"/>
                         {errors.passportNumber && <p id="passportNumber-error" className="mt-1 text-sm text-[--color-danger]">{errors.passportNumber}</p>}
                     </div>
                     <div>
@@ -171,13 +180,9 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
                         {errors.passportExpiry && <p id="passportExpiry-error" className="mt-1 text-sm text-[--color-danger]">{errors.passportExpiry}</p>}
                     </div>
 
-                    <div className="flex justify-between pt-4">
-                        <button type="button" onClick={prevStep} className="px-6 py-2 text-sm font-medium text-[--color-text-body] bg-[--color-surface-accent] rounded-lg hover:bg-[--color-border] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring]">
-                            Back
-                        </button>
-                        <button type="submit" className="px-6 py-2 text-sm font-medium text-[--color-primary-text] bg-[--color-primary] rounded-lg hover:bg-[--color-primary-hover] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring]">
-                            Next
-                        </button>
+                    <div className="flex justify-between pt-6">
+                        <Button type="button" variant="secondary" onClick={prevStep}>Back</Button>
+                        <Button type="submit" variant="primary">Next</Button>
                     </div>
                 </form>
             </div>

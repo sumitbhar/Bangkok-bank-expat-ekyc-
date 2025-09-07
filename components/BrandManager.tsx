@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useBranding } from '../branding/BrandingContext';
 import { themes } from '../branding/themes';
@@ -16,6 +17,7 @@ import { ChartBarIcon } from './icons/ChartBarIcon';
 import { pitchDeckContent } from '../branding/pitchDeckContent';
 import { PresentationChartBarIcon } from './icons/PresentationChartBarIcon';
 import { competitiveFeatures } from '../branding/competitiveData';
+import Button from './common/Button';
 
 interface Props {
     onClose: () => void;
@@ -33,12 +35,20 @@ const fileToDataUrl = (file: File): Promise<string> => {
 const BrandManager: React.FC<Props> = ({ onClose }) => {
     const { bankName, setBankName, logo, setLogo, theme, setTheme, textSize, setTextSize } = useBranding();
     const [logoPrompt, setLogoPrompt] = useState(`A modern, minimalist logo for a bank named "${bankName}"`);
+    const [isPromptEdited, setIsPromptEdited] = useState(false);
     const [generatedLogos, setGeneratedLogos] = useState<string[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const modalRef = useRef<HTMLDivElement>(null);
     const triggerElementRef = useRef<HTMLElement | null>(null);
+    
+    useEffect(() => {
+        if (!isPromptEdited) {
+            setLogoPrompt(`A modern, minimalist logo for a bank named "${bankName}"`);
+        }
+    }, [bankName, isPromptEdited]);
+
 
     useEffect(() => {
         // Save the element that triggered the modal
@@ -292,7 +302,7 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
             body: body,
             startY: 30,
             headStyles: {
-                fillColor: [30, 64, 175] // --color-primary as RGB
+                fillColor: [37, 99, 235] // --color-primary as RGB
             },
             columnStyles: {
                 1: { fontStyle: 'bold' }
@@ -303,15 +313,15 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
     };
     
     return (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" aria-modal="true" role="dialog">
-            <div ref={modalRef} className="bg-[--color-background-main] w-full max-w-2xl rounded-lg shadow-2xl max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" aria-modal="true" role="dialog">
+            <div ref={modalRef} className="bg-[--color-background-main] w-full max-w-2xl rounded-2xl shadow-2xl max-h-[90vh] flex flex-col">
                 <header className="p-4 border-b border-[--color-border] flex justify-between items-center">
                     <h2 className="text-xl font-bold text-[--color-text-header]">Brand Management</h2>
                     <button onClick={onClose} className="p-1 rounded-full hover:bg-[--color-surface-accent]">
                         <CloseIcon className="h-6 w-6 text-[--color-text-muted]" />
                     </button>
                 </header>
-                <main className="p-6 space-y-6 overflow-y-auto">
+                <main className="p-6 space-y-8 overflow-y-auto">
                     {/* Bank Name */}
                     <div>
                         <label htmlFor="bankName" className="block text-sm font-medium text-[--color-text-body] mb-1">Bank Name</label>
@@ -320,7 +330,7 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
                             id="bankName"
                             value={bankName}
                             onChange={(e) => setBankName(e.target.value)}
-                            className="w-full px-3 py-2 bg-[--color-background-main] border border-[--color-border] rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]"
+                            className="w-full px-3 py-2 bg-[--color-background-main] border border-[--color-border] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring] focus:border-[--color-primary]"
                         />
                     </div>
 
@@ -330,39 +340,48 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                             <div>
                                 <p className="text-sm font-medium text-[--color-text-body] mb-2">Current Logo</p>
-                                <div className="h-24 w-24 flex items-center justify-center bg-[--color-surface] rounded-md border border-[--color-border]">
+                                <div className="h-24 w-24 flex items-center justify-center bg-[--color-surface-accent] rounded-lg border border-[--color-border]">
                                     {logo ? <img src={logo} alt="Current Logo" className="h-20 w-20 object-contain" /> : <span className="text-xs text-[--color-text-muted]">No Logo</span>}
                                 </div>
                             </div>
                             <div>
-                                <label htmlFor="logo-upload" className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-[--color-border] rounded-md cursor-pointer hover:bg-[--color-surface]">
+                                <label htmlFor="logo-upload" className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-[--color-text-body] bg-[--color-surface-accent] border border-[--color-border] rounded-lg cursor-pointer hover:bg-[--color-border]">
                                     <UploadIcon className="h-5 w-5" />
                                     Upload Logo
                                 </label>
                                 <input id="logo-upload" type="file" className="sr-only" onChange={handleLogoUpload} accept="image/*" />
-                                <button onClick={() => setLogo(null)} className="mt-2 w-full text-sm text-[--color-danger]">Remove Logo</button>
+                                <button onClick={() => setLogo(null)} className="mt-2 w-full text-sm text-[--color-danger] hover:underline">Remove Logo</button>
                             </div>
                         </div>
                          {/* AI Logo Generator */}
-                        <div className="p-4 bg-[--color-surface] rounded-lg border border-[--color-border]">
-                             <h4 className="font-semibold flex items-center gap-2"><SparklesIcon className="h-5 w-5 text-yellow-500" /> AI Logo Maker</h4>
-                             <p className="text-sm text-[--color-text-muted] my-2">Describe the logo you want, and our AI will generate options for you.</p>
+                        <div className="p-4 bg-[--color-surface-accent] rounded-lg border border-[--color-border]">
+                             <h4 className="font-semibold flex items-center gap-2 text-[--color-text-header]"><SparklesIcon className="h-5 w-5 text-yellow-500" /> AI Logo Maker</h4>
+                             <p className="text-sm text-[--color-text-body] my-2">Describe the logo you want, and our AI will generate options for you.</p>
                              <textarea
                                 value={logoPrompt}
-                                onChange={(e) => setLogoPrompt(e.target.value)}
+                                onChange={(e) => {
+                                    setLogoPrompt(e.target.value);
+                                    setIsPromptEdited(true);
+                                }}
                                 rows={2}
-                                className="w-full text-sm px-3 py-2 bg-[--color-background-main] border border-[--color-border] rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]"
+                                className="w-full text-sm px-3 py-2 bg-[--color-background-main] border border-[--color-border] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring] focus:border-[--color-primary]"
                              />
-                             <button onClick={handleGenerateLogos} disabled={isGenerating} className="mt-2 flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-[--color-primary-text] bg-[--color-primary] rounded-lg hover:bg-[--color-primary-hover] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring] disabled:bg-gray-400">
-                                {isGenerating ? <><SpinnerIcon className="h-5 w-5" /> Generating...</> : 'Generate Logos'}
-                             </button>
+                              <Button
+                                onClick={handleGenerateLogos}
+                                isLoading={isGenerating}
+                                disabled={isGenerating}
+                                variant="primary"
+                                className="mt-2 w-full"
+                             >
+                                Generate Logos
+                             </Button>
                              {error && <p className="text-sm text-[--color-danger] mt-2">{error}</p>}
                              {generatedLogos.length > 0 && (
                                 <div className="mt-4">
-                                    <p className="text-sm font-medium text-center">Select a logo:</p>
+                                    <p className="text-sm font-medium text-center text-[--color-text-header]">Select a logo:</p>
                                     <div className="grid grid-cols-4 gap-2 mt-2">
                                         {generatedLogos.map((imgSrc, i) => (
-                                            <button key={i} onClick={() => setLogo(imgSrc)} className="p-1 border-2 border-transparent hover:border-[--color-primary] rounded-md focus:border-[--color-primary] focus:outline-none">
+                                            <button key={i} onClick={() => setLogo(imgSrc)} className="p-1 border-2 border-transparent hover:border-[--color-primary] rounded-md focus:border-[--color-primary] focus:outline-none transition-all">
                                                 <img src={imgSrc} alt={`Generated logo ${i+1}`} className="w-full h-full object-cover rounded-sm"/>
                                             </button>
                                         ))}
@@ -380,11 +399,11 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
                                 <button
                                     key={t.name}
                                     onClick={() => setTheme(t)}
-                                    className={`p-2 border rounded-md text-left text-sm ${t.name === theme.name ? 'border-[--color-primary] ring-2 ring-[--color-primary]' : 'border-[--color-border]'}`}
+                                    className={`p-2 border rounded-lg text-left text-sm transition-all ${t.name === theme.name ? 'border-[--color-primary] ring-2 ring-[--color-focus-ring]' : 'border-[--color-border] hover:border-[--color-text-muted]'}`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <span style={{ backgroundColor: t.colors['--color-primary'] }} className="h-5 w-5 rounded-full block border"></span>
-                                        <span>{t.name.replace('Bangkok Bank ', '')}</span>
+                                        <span className="text-[--color-text-body]">{t.name.replace('Bangkok Bank ', '')}</span>
                                     </div>
                                 </button>
                             ))}
@@ -394,12 +413,12 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
                      {/* Text Size */}
                     <div>
                         <h3 className="text-lg font-semibold text-[--color-text-header] mb-2">Text Size</h3>
-                        <div className="flex items-center gap-2 rounded-lg bg-[--color-surface] p-1">
+                        <div className="flex items-center gap-2 rounded-lg bg-[--color-surface-accent] p-1">
                            {(['sm', 'base', 'lg'] as TextSize[]).map(size => (
                                <button 
                                 key={size}
                                 onClick={() => setTextSize(size)}
-                                className={`w-full py-1 text-sm rounded-md capitalize ${textSize === size ? 'bg-[--color-primary] text-[--color-primary-text] shadow' : 'hover:bg-[--color-surface-accent]'}`}
+                                className={`w-full py-1.5 text-sm font-semibold rounded-md capitalize transition-all ${textSize === size ? 'bg-[--color-primary] text-[--color-primary-text] shadow' : 'hover:bg-[--color-background-main]'}`}
                                >
                                 {size === 'sm' ? 'Small' : size === 'base' ? 'Medium' : 'Large'}
                                </button>
@@ -411,35 +430,26 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
                     <div>
                         <h3 className="text-lg font-semibold text-[--color-text-header] mb-2">Resources & Analysis</h3>
                         <div className="space-y-2">
-                             <button
-                                onClick={handleDownloadPitchDeck}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-[--color-border] rounded-md cursor-pointer hover:bg-[--color-surface]"
-                            >
+                            <Button variant="secondary" onClick={handleDownloadPitchDeck} className="w-full justify-center">
                                 <PresentationChartBarIcon className="h-5 w-5" />
                                 Download Pitch Deck (PDF)
-                            </button>
-                            <button
-                                onClick={handleDownloadManual}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-[--color-border] rounded-md cursor-pointer hover:bg-[--color-surface]"
-                            >
+                            </Button>
+                            <Button variant="secondary" onClick={handleDownloadManual} className="w-full justify-center">
                                 <DownloadIcon className="h-5 w-5" />
                                 Download User Manual (PDF)
-                            </button>
-                             <button
-                                onClick={handleDownloadAnalysis}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-[--color-border] rounded-md cursor-pointer hover:bg-[--color-surface]"
-                            >
+                            </Button>
+                             <Button variant="secondary" onClick={handleDownloadAnalysis} className="w-full justify-center">
                                 <DownloadIcon className="h-5 w-5" />
                                 Download Analysis (PDF)
-                            </button>
+                            </Button>
                              <details className="group">
-                                <summary className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-[--color-border] rounded-md cursor-pointer hover:bg-[--color-surface] list-none">
+                                <summary className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-[--color-text-body] bg-[--color-surface-accent] border border-[--color-border] rounded-lg cursor-pointer hover:bg-[--color-border] list-none">
                                      <div className="flex items-center justify-between w-full">
                                          <span className="flex items-center gap-2">
                                              <ChartBarIcon className="h-5 w-5" />
                                              View Competitive Edge
                                          </span>
-                                         <svg className="h-5 w-5 transform transition-transform group-open:rotate-180" xmlns="http://www.w3.g/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                         <svg className="h-5 w-5 transform transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                          </svg>
                                      </div>

@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+import Button from '../common/Button';
 
 interface Props {
     nextStep: () => void;
@@ -17,10 +19,10 @@ const Step_TermsAndConditions: React.FC<Props> = ({ nextStep, prevStep }) => {
 
     return (
         <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold text-[--color-text-header] mb-2">Terms & Conditions</h2>
-            <p className="text-[--color-text-body] mb-6">Please read the following terms and conditions carefully before proceeding.</p>
+            <h2 className="text-3xl font-bold text-[--color-text-header] tracking-tight mb-2">Terms & Conditions</h2>
+            <p className="text-[--color-text-body] mb-8">Please read the following terms and conditions carefully before proceeding.</p>
 
-            <div className="h-64 overflow-y-auto p-4 border border-[--color-border] rounded-md bg-[--color-surface] text-[--color-text-body] text-sm space-y-4">
+            <div className="h-64 overflow-y-auto p-4 border border-[--color-border] rounded-lg bg-[--color-surface-accent] text-[--color-text-body] text-sm space-y-4">
                 <div>
                     <h4 className="font-bold text-base text-[--color-text-header] mb-1">1. Introduction</h4>
                     <p>Welcome to our eKYC service. By using this service, you agree to comply with and be bound by the following terms and conditions of use, which together with our privacy policy govern our relationship with you in relation to this service.</p>
@@ -57,27 +59,23 @@ const Step_TermsAndConditions: React.FC<Props> = ({ nextStep, prevStep }) => {
 
             <form onSubmit={handleNext} noValidate>
                 <div className="mt-6">
-                    <label htmlFor="terms-agree" className="flex items-center cursor-pointer">
+                    <label htmlFor="terms-agree" className="flex items-center cursor-pointer p-2 rounded-md hover:bg-[--color-surface-accent]">
                         <input
                             id="terms-agree"
                             name="terms-agree"
                             type="checkbox"
                             checked={agreed}
                             onChange={(e) => setAgreed(e.target.checked)}
-                            className="h-4 w-4 rounded border-gray-300 text-[--color-primary] focus:ring-[--color-focus-ring]"
+                            className="h-5 w-5 rounded border-gray-300 text-[--color-primary] focus:ring-[--color-focus-ring] focus:ring-offset-2"
                             required
                         />
-                        <span className="ml-3 text-sm text-[--color-text-body]">I have read and agree to the Terms and Conditions.</span>
+                        <span className="ml-3 text-sm font-medium text-[--color-text-body]">I have read and agree to the Terms and Conditions.</span>
                     </label>
                 </div>
 
                 <div className="flex justify-between pt-8">
-                    <button type="button" onClick={prevStep} className="px-6 py-2 text-sm font-medium text-[--color-text-body] bg-[--color-surface-accent] rounded-lg hover:bg-[--color-border] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring]">
-                        Back
-                    </button>
-                    <button type="submit" disabled={!agreed} className="px-6 py-2 text-sm font-medium text-[--color-primary-text] bg-[--color-primary] rounded-lg hover:bg-[--color-primary-hover] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring] disabled:bg-gray-400 disabled:cursor-not-allowed">
-                        Next
-                    </button>
+                     <Button type="button" variant="secondary" onClick={prevStep}>Back</Button>
+                     <Button type="submit" variant="primary" disabled={!agreed}>Next</Button>
                 </div>
             </form>
         </div>

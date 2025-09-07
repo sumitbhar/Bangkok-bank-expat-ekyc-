@@ -16,6 +16,12 @@ const parseDate = (dateString: string): Date | null => {
     return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
 };
 
+// Helper to get today's date at midnight UTC
+const getTodaysUTCDate = (): Date => {
+    const today = new Date();
+    return new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+};
+
 
 interface DatePickerProps {
     id: string;
@@ -27,8 +33,8 @@ interface DatePickerProps {
 
 const DatePicker: React.FC<DatePickerProps> = ({ id, selectedDate, onChange, minDate, maxDate }) => {
     const [isOpen, setIsOpen] = useState(false);
-    // Use UTC for viewDate to prevent timezone shifts
-    const [viewDate, setViewDate] = useState(parseDate(selectedDate) || new Date(new Date().setUTCHours(0, 0, 0, 0)));
+    // Use UTC for viewDate to prevent timezone shifts. Initialize lazily.
+    const [viewDate, setViewDate] = useState(() => parseDate(selectedDate) || getTodaysUTCDate());
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -78,8 +84,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedDate, onChange, min
     }, [viewDate]);
 
     const selectedDateObj = parseDate(selectedDate);
-    const today = new Date();
-    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    const todayUTC = useMemo(() => getTodaysUTCDate(), []);
     
     // Ensure min/max dates are compared at UTC midnight
     const minDateUTC = minDate ? new Date(Date.UTC(minDate.getFullYear(), minDate.getMonth(), minDate.getDate())) : null;
@@ -94,7 +99,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedDate, onChange, min
                     value={selectedDate}
                     onFocus={() => setIsOpen(true)}
                     readOnly
-                    className="mt-1 block w-full pl-3 pr-10 py-2 bg-[--color-background-main] border border-[--color-border] rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary] cursor-pointer"
+                    className="mt-1 block w-full pl-3 pr-10 py-2 bg-[--color-background-main] border border-[--color-border] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring] focus:border-[--color-primary] transition-colors duration-150 cursor-pointer"
                     aria-label="Date picker input"
                 />
                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -103,28 +108,27 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedDate, onChange, min
             </div>
 
             {isOpen && (
-                <div className="absolute z-10 mt-1 w-full bg-[--color-background-main] border border-[--color-border] rounded-md shadow-lg p-2" role="dialog" aria-modal="true">
-                    <div className="flex justify-between items-center mb-2 px-2">
-                        <button type="button" onClick={() => changeMonth(-1)} className="p-1 rounded-full hover:bg-[--color-surface] focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring]" aria-label="Previous month">
+                <div className="absolute z-10 mt-1 w-full bg-[--color-background-main] border border-[--color-border] rounded-lg shadow-lg p-3" role="dialog" aria-modal="true">
+                    <div className="flex justify-between items-center mb-3 px-1">
+                        <button type="button" onClick={() => changeMonth(-1)} className="p-1 rounded-full hover:bg-[--color-surface-accent] focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring]" aria-label="Previous month">
                             <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                         </button>
-                        <span className="font-semibold text-sm">
+                        <span className="font-semibold text-sm text-[--color-text-header]">
                            {viewDate.toLocaleString('default', { month: 'long', year: 'numeric', timeZone: 'UTC' })}
                         </span>
-                        <button type="button" onClick={() => changeMonth(1)} className="p-1 rounded-full hover:bg-[--color-surface] focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring]" aria-label="Next month">
+                        <button type="button" onClick={() => changeMonth(1)} className="p-1 rounded-full hover:bg-[--color-surface-accent] focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring]" aria-label="Next month">
                             <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                         </button>
                     </div>
                     <div className="grid grid-cols-7 text-center text-sm">
-                        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => <div key={day} className="font-medium text-[--color-text-muted] py-1">{day}</div>)}
+                        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => <div key={day} className="font-medium text-[--color-text-muted] py-1 text-xs">{day}</div>)}
                         {calendarDays.map((date, index) => {
                             const isCurrentMonth = date.getUTCMonth() === viewDate.getUTCMonth();
                             const isSelected = selectedDateObj && date.getTime() === selectedDateObj.getTime();
                             const isToday = todayUTC.getTime() === date.getTime();
-                            // Bug Fix: Use `>` for maxDate to allow selection of the maxDate itself.
                             const isDisabled = (minDateUTC && date < minDateUTC) || (maxDateUTC && date > maxDateUTC);
 
-                            let className = "flex items-center justify-center h-8 w-8 rounded-full transition-colors duration-150";
+                            let className = "flex items-center justify-center h-9 w-9 rounded-full transition-colors duration-150";
                              if (!isCurrentMonth) {
                                 className += " text-gray-300 cursor-default";
                             } else if (isDisabled) {
@@ -135,9 +139,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedDate, onChange, min
                                 if (isSelected) {
                                     className += " bg-[--color-primary] text-[--color-primary-text] font-bold";
                                 } else if (isToday) {
-                                    className += " bg-[--color-primary-light] text-[--color-primary]";
+                                    className += " text-[--color-primary] ring-1 ring-[--color-primary]";
                                 } else {
-                                    className += " hover:bg-[--color-surface]";
+                                    className += " hover:bg-[--color-surface-accent]";
                                 }
                             }
                             

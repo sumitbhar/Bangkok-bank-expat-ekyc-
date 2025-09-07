@@ -1,5 +1,7 @@
+
 import React, { useState, ChangeEvent } from 'react';
 import { FormData } from '../../types';
+import Button from '../common/Button';
 
 interface Props {
     nextStep: () => void;
@@ -46,12 +48,17 @@ const Step4Address: React.FC<Props> = ({ nextStep, prevStep, formData, updateFor
             nextStep();
         }
     };
+    
+    const textAreaClassName = (hasError: boolean) =>
+    `mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${
+      hasError ? 'border-[--color-danger]' : 'border-[--color-border]'
+    } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[--color-focus-ring] focus:border-[--color-primary] transition-colors duration-150`;
 
     return (
         <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold text-[--color-text-header] mb-2">Address Information</h2>
-            <p className="text-[--color-text-body] mb-6">Please provide your current address in Bangkok and your permanent address in your home country.</p>
-            <form onSubmit={handleNext} className="space-y-4" noValidate>
+            <h2 className="text-3xl font-bold text-[--color-text-header] tracking-tight mb-2">Address Information</h2>
+            <p className="text-[--color-text-body] mb-8">Please provide your current address in Bangkok and your permanent address in your home country.</p>
+            <form onSubmit={handleNext} className="space-y-6" noValidate>
                 <div>
                     <label htmlFor="bangkokAddress" className="block text-sm font-medium text-[--color-text-body]">Current Address in Bangkok</label>
                     <textarea 
@@ -61,7 +68,7 @@ const Step4Address: React.FC<Props> = ({ nextStep, prevStep, formData, updateFor
                         onChange={handleChange} 
                         rows={4}
                         required 
-                        className={`mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${errors.bangkokAddress ? 'border-[--color-danger]' : 'border-[--color-border]'} rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]`}
+                        className={textAreaClassName(!!errors.bangkokAddress)}
                         aria-invalid={!!errors.bangkokAddress}
                         aria-describedby="bangkokAddress-error"
                     />
@@ -76,20 +83,16 @@ const Step4Address: React.FC<Props> = ({ nextStep, prevStep, formData, updateFor
                         onChange={handleChange} 
                         rows={4}
                         required 
-                        className={`mt-1 block w-full px-3 py-2 bg-[--color-background-main] border ${errors.homeCountryAddress ? 'border-[--color-danger]' : 'border-[--color-border]'} rounded-md shadow-sm focus:outline-none focus:ring-[--color-focus-ring] focus:border-[--color-primary]`}
+                        className={textAreaClassName(!!errors.homeCountryAddress)}
                         aria-invalid={!!errors.homeCountryAddress}
                         aria-describedby="homeCountryAddress-error"
                     />
                     {errors.homeCountryAddress && <p id="homeCountryAddress-error" className="mt-1 text-sm text-[--color-danger]">{errors.homeCountryAddress}</p>}
                 </div>
                 
-                <div className="flex justify-between pt-4">
-                    <button type="button" onClick={prevStep} className="px-6 py-2 text-sm font-medium text-[--color-text-body] bg-[--color-surface-accent] rounded-lg hover:bg-[--color-border] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring]">
-                        Back
-                    </button>
-                    <button type="submit" className="px-6 py-2 text-sm font-medium text-[--color-primary-text] bg-[--color-primary] rounded-lg hover:bg-[--color-primary-hover] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[--color-focus-ring]">
-                        Next
-                    </button>
+                <div className="flex justify-between pt-6">
+                    <Button type="button" variant="secondary" onClick={prevStep}>Back</Button>
+                    <Button type="submit" variant="primary">Next</Button>
                 </div>
             </form>
         </div>

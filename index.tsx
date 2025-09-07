@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrandingProvider } from './branding/BrandingContext';
+import { AuthProvider } from './auth/AuthContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -12,7 +13,9 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <BrandingProvider>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrandingProvider>
   </React.StrictMode>
 );

@@ -1,9 +1,11 @@
+
 export enum EKYCStep {
     PersonalInfo = 'PERSONAL_INFO',
     Documents = 'DOCUMENTS',
     Liveness = 'LIVENESS',
     ImageVerification = 'IMAGE_VERIFICATION',
     Address = 'ADDRESS',
+    FinancialInfo = 'FINANCIAL_INFO',
     TermsAndConditions = 'TERMS_AND_CONDITIONS',
     Review = 'REVIEW',
     Success = 'SUCCESS',
@@ -36,9 +38,16 @@ export interface FormData {
         bangkokAddress: string;
         homeCountryAddress: string;
     };
+    financialInfo: {
+        employmentStatus: string;
+        sourceOfFunds: string;
+        monthlyTransactions: string;
+    };
 }
 
 export type TextSize = 'sm' | 'base' | 'lg';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'warning';
 
 export interface Theme {
   name: string;
@@ -58,9 +67,14 @@ export interface Theme {
     '--color-surface-accent': string;
     '--color-border': string;
     '--color-success': string;
+    '--color-success-hover': string;
     '--color-success-bg': string;
     '--color-danger': string;
     '--color-danger-bg': string;
     '--color-focus-ring': string;
   };
+}
+
+export interface User {
+    username: string;
 }

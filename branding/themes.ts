@@ -1,25 +1,26 @@
 import { Theme } from '../types';
 
 const defaultColors = {
-    '--color-primary': '#1E40AF', // blue-800
-    '--color-primary-hover': '#1E3A8A', // blue-900
-    '--color-primary-light': '#DBEAFE', // blue-100
+    '--color-primary': '#4F46E5', // indigo-600
+    '--color-primary-hover': '#4338CA', // indigo-700
+    '--color-primary-light': '#EEF2FF', // indigo-50
     '--color-primary-text': '#FFFFFF',
-    '--color-secondary': '#4B5563', // gray-600
-    '--color-secondary-hover': '#374151', // gray-700
-    '--color-text-header': '#111827', // gray-900
-    '--color-text-body': '#374151', // gray-700
-    '--color-text-muted': '#6B7280', // gray-500
-    '--color-background': '#F3F4F6', // gray-100
+    '--color-secondary': '#475569', // slate-600
+    '--color-secondary-hover': '#334155', // slate-700
+    '--color-text-header': '#0F172A', // slate-900
+    '--color-text-body': '#334155', // slate-700
+    '--color-text-muted': '#64748B', // slate-500
+    '--color-background': '#F8FAFC', // slate-50
     '--color-background-main': '#FFFFFF',
-    '--color-surface': '#F9FAFB', // gray-50
-    '--color-surface-accent': '#E5E7EB', // gray-200
-    '--color-border': '#D1D5DB', // gray-300
+    '--color-surface': '#FFFFFF',
+    '--color-surface-accent': '#F1F5F9', // slate-100
+    '--color-border': '#E2E8F0', // slate-200
     '--color-success': '#16A34A', // green-600
-    '--color-success-bg': '#DCFCE7', // green-100
+    '--color-success-hover': '#15803D', // green-700
+    '--color-success-bg': '#F0FDF4', // green-50
     '--color-danger': '#DC2626', // red-600
-    '--color-danger-bg': '#FEE2E2', // red-100
-    '--color-focus-ring': '#3B82F6', // blue-500
+    '--color-danger-bg': '#FEF2F2', // red-50
+    '--color-focus-ring': 'rgba(99, 102, 241, 0.4)', // indigo-500 with opacity
 };
 
 export const defaultTheme: Theme = {
@@ -36,7 +37,7 @@ export const themes: Theme[] = [
             '--color-primary': '#007BFF',
             '--color-primary-hover': '#0056b3',
             '--color-primary-light': '#cce5ff',
-            '--color-focus-ring': '#007BFF',
+            '--color-focus-ring': 'rgba(0, 123, 255, 0.5)',
         },
     },
     {
@@ -46,7 +47,7 @@ export const themes: Theme[] = [
             '--color-primary': '#198754',
             '--color-primary-hover': '#146c43',
             '--color-primary-light': '#d1e7dd',
-            '--color-focus-ring': '#198754',
+            '--color-focus-ring': 'rgba(25, 135, 84, 0.5)',
         },
     },
     {
@@ -56,7 +57,7 @@ export const themes: Theme[] = [
             '--color-primary': '#fd7e14',
             '--color-primary-hover': '#d86602',
             '--color-primary-light': '#ffeddd',
-            '--color-focus-ring': '#fd7e14',
+            '--color-focus-ring': 'rgba(253, 126, 20, 0.5)',
         },
     },
     {
@@ -66,7 +67,7 @@ export const themes: Theme[] = [
             '--color-primary': '#6f42c1',
             '--color-primary-hover': '#59359a',
             '--color-primary-light': '#e9dff6',
-            '--color-focus-ring': '#6f42c1',
+            '--color-focus-ring': 'rgba(111, 66, 193, 0.5)',
         },
     },
     {

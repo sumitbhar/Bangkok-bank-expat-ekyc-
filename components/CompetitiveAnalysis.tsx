@@ -6,15 +6,25 @@ import { competitiveFeatures } from '../branding/competitiveData';
 const CompetitiveAnalysis: React.FC = () => {
     
     const renderValue = (value: string) => {
-        if (value.toLowerCase() === 'yes') return <CheckIcon className="h-6 w-6 text-[--color-success] mx-auto" />;
-        if (value.toLowerCase().startsWith('yes')) {
-             const detail = value.match(/\(([^)]+)\)/);
-             return <div className="flex items-center justify-center gap-1.5">
-                 <CheckIcon className="h-5 w-5 text-[--color-success]" />
-                 <span>{detail ? detail[1] : ''}</span>
-             </div>
+        const lowerValue = value.toLowerCase();
+
+        if (lowerValue.startsWith('yes')) {
+            const detail = value.match(/\(([^)]+)\)/);
+            if (detail) {
+                return (
+                    <div className="flex items-center justify-center gap-1.5">
+                        <CheckIcon className="h-5 w-5 text-[--color-success]" />
+                        <span>{detail[1]}</span>
+                    </div>
+                );
+            }
+            return <CheckIcon className="h-6 w-6 text-[--color-success] mx-auto" />;
         }
-        if (value.toLowerCase() === 'no') return <XIcon className="h-5 w-5 text-[--color-danger] mx-auto" />;
+
+        if (lowerValue === 'no') {
+            return <XIcon className="h-5 w-5 text-[--color-danger] mx-auto" />;
+        }
+
         return value;
     };
 
