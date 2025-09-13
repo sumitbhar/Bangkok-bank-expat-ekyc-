@@ -6,6 +6,18 @@ if (!process.env.API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+// Helper to robustly parse a data URL into its constituent parts.
+const parseDataUrl = (dataUrl: string): { mimeType: string; data: string } => {
+    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+         throw new Error("Invalid data URL format provided for image processing.");
+    }
+    const match = dataUrl.match(/^data:(.+);base64,(.+)$/);
+    if (!match) {
+        throw new Error("Invalid data URL format provided for image processing.");
+    }
+    return { mimeType: match[1], data: match[2] };
+};
+
 const PASSPORT_INFO_SCHEMA = {
   type: Type.OBJECT,
   properties: {
@@ -90,7 +102,6 @@ export const extractPassportInfo = async (imageBase64: string, mimeType: string)
     return parsedData;
 
   } catch (error) {
-    console.error("Error extracting passport info:", error);
     throw new Error("Failed to analyze passport image. Please ensure the image is clear and try again.");
   }
 };
@@ -100,11 +111,8 @@ export const compareFaces = async (selfieDataUrl: string, profilePicDataUrl: str
   try {
     const prompt = "Analyze these two images. Are they of the same person? Please provide a simple boolean 'match' field and a brief 'reason' string in the specified JSON format.";
 
-    const selfieMimeType = selfieDataUrl.match(/data:(.*);base64/)?.[1] || 'image/png';
-    const selfieBase64 = selfieDataUrl.split(',')[1];
-    
-    const profilePicMimeType = profilePicDataUrl.match(/data:(.*);base64/)?.[1] || 'image/jpeg';
-    const profilePicBase64 = profilePicDataUrl.split(',')[1];
+    const { mimeType: selfieMimeType, data: selfieBase64 } = parseDataUrl(selfieDataUrl);
+    const { mimeType: profilePicMimeType, data: profilePicBase64 } = parseDataUrl(profilePicDataUrl);
 
     const selfiePart = {
       inlineData: { mimeType: selfieMimeType, data: selfieBase64 },
@@ -129,7 +137,9 @@ export const compareFaces = async (selfieDataUrl: string, profilePicDataUrl: str
     return JSON.parse(jsonText) as FaceMatchResult;
 
   } catch (error) {
-    console.error("Error comparing faces:", error);
+    if (error instanceof Error && error.message.includes("Invalid data URL")) {
+        throw new Error("Failed to process one of the images. Please ensure they are valid image files and try again.");
+    }
     throw new Error("Failed to compare images due to an API error. Please try again.");
   }
 };
@@ -148,7 +158,6 @@ export const generateLogo = async (prompt: string): Promise<string[]> => {
 
     return response.generatedImages.map(img => `data:image/png;base64,${img.image.imageBytes}`);
   } catch (error) {
-    console.error("Error generating logo:", error);
     throw new Error("Failed to generate logo. Please try again.");
   }
 };

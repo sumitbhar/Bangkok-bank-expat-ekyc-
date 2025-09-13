@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import Button from '../components/common/Button';
@@ -17,15 +15,12 @@ const SessionTimeout: React.FC<Props> = ({ onIdle }) => {
   const [isWarningVisible, setWarningVisible] = useState(false);
   const [countdown, setCountdown] = useState(WARNING_DURATION / 1000);
   
-  // FIX: Replaced `ReturnType<typeof ...>` with `number` for browser compatibility and to resolve type errors.
-  // `ReturnType` can have issues with overloaded functions like `setTimeout` when Node.js types are present.
-  // Explicitly using `number` is safer as it's the standard return type for browser timer functions.
-  const timeoutId = useRef<number>();
-  const warningTimeoutId = useRef<number>();
-  const countdownIntervalId = useRef<number>();
+  // Fix: Use explicit ReturnType for browser-specific timer functions to avoid type conflicts.
+  const timeoutId = useRef<ReturnType<typeof window.setTimeout>>();
+  const warningTimeoutId = useRef<ReturnType<typeof window.setTimeout>>();
+  const countdownIntervalId = useRef<ReturnType<typeof window.setInterval>>();
 
   const startTimers = useCallback(() => {
-    // Clear existing timers
     if (timeoutId.current) window.clearTimeout(timeoutId.current);
     if (warningTimeoutId.current) window.clearTimeout(warningTimeoutId.current);
     if (countdownIntervalId.current) window.clearInterval(countdownIntervalId.current);
@@ -53,20 +48,18 @@ const SessionTimeout: React.FC<Props> = ({ onIdle }) => {
 
   const stayActive = () => {
     setWarningVisible(false);
-    resetTimers();
+    startTimers(); // Directly reset timers, bypassing the guard in resetTimers
   };
 
   useEffect(() => {
     if (isAuthenticated) {
-      const events = ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'];
-      
-      const eventListener = () => resetTimers();
-      
-      events.forEach(event => window.addEventListener(event, eventListener));
       startTimers();
 
+      const events: (keyof WindowEventMap)[] = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+      events.forEach(event => window.addEventListener(event, resetTimers));
+
       return () => {
-        events.forEach(event => window.removeEventListener(event, eventListener));
+        events.forEach(event => window.removeEventListener(event, resetTimers));
         if (timeoutId.current) window.clearTimeout(timeoutId.current);
         if (warningTimeoutId.current) window.clearTimeout(warningTimeoutId.current);
         if (countdownIntervalId.current) window.clearInterval(countdownIntervalId.current);
@@ -80,17 +73,18 @@ const SessionTimeout: React.FC<Props> = ({ onIdle }) => {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" aria-modal="true" role="dialog">
-      <div className="bg-[--color-background-main] w-full max-w-md rounded-2xl shadow-2xl p-8 text-center">
-        <InfoIcon className="h-16 w-16 mx-auto text-[--color-primary]" />
-        <h2 className="text-2xl font-bold text-[--color-text-header] mt-4">Are you still there?</h2>
-        <p className="text-[--color-text-body] mt-2">
-          For your security, you will be logged out automatically due to inactivity in <span className="font-bold">{countdown}</span> seconds.
+      <div className="bg-[--color-background-main] w-full max-w-md rounded-2xl shadow-2xl flex flex-col p-6 text-center">
+        <InfoIcon className="h-12 w-12 text-[--color-primary] mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-[--color-text-header]">Session Timeout Warning</h2>
+        <p className="text-[--color-text-body] my-4">
+          You have been inactive. For your security, you will be logged out in{' '}
+          <span className="font-bold">{countdown}</span> seconds.
         </p>
-        <div className="mt-6 flex flex-col sm:flex-row gap-4">
-          <Button variant="secondary" onClick={onIdle} className="w-full justify-center">
-            Logout
+        <div className="flex justify-center gap-4">
+          <Button variant="secondary" onClick={onIdle}>
+            Logout Now
           </Button>
-          <Button variant="primary" onClick={stayActive} className="w-full justify-center">
+          <Button variant="primary" onClick={stayActive}>
             Stay Logged In
           </Button>
         </div>

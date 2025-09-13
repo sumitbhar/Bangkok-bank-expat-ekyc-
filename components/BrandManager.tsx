@@ -14,8 +14,6 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import CompetitiveAnalysis from './CompetitiveAnalysis';
 import { ChartBarIcon } from './icons/ChartBarIcon';
-import { pitchDeckContent } from '../branding/pitchDeckContent';
-import { PresentationChartBarIcon } from './icons/PresentationChartBarIcon';
 import { competitiveFeatures } from '../branding/competitiveData';
 import Button from './common/Button';
 
@@ -120,101 +118,6 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
         } finally {
             setIsGenerating(false);
         }
-    };
-
-    const handleDownloadPitchDeck = () => {
-        const doc = new jsPDF({ orientation: 'landscape' });
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-        const margin = 15;
-        const footerHeight = 10;
-
-        const slides = pitchDeckContent.split('# Slide');
-
-        slides.forEach((slideContent, index) => {
-            if (index === 0 || !slideContent.trim()) return;
-
-            if (index > 1) {
-                doc.addPage();
-            }
-            
-            let y = 20;
-
-            const lines = slideContent.trim().split('\n');
-            const slideTitleLine = lines.shift() || 'Slide';
-            const slideTitle = slideTitleLine.substring(slideTitleLine.indexOf(':') + 1).trim();
-            
-            // Slide Title
-            doc.setFontSize(24);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(0, 0, 0);
-            doc.text(slideTitle, pageWidth / 2, y, { align: 'center' });
-            y += 20;
-            
-            // Slide Content
-            lines.forEach(line => {
-                let text = line.trim();
-                let x = margin;
-                
-                // Check if we need a new page
-                if (y > pageHeight - margin - footerHeight) {
-                     doc.addPage();
-                     y = 20;
-                }
-
-                if (text.startsWith('[Image:')) {
-                    const imgText = text.replace('[Image:', '').replace(']', '').trim();
-                    const rectHeight = 60;
-                    
-                    doc.setFillColor(235, 237, 240); // Light gray background
-                    doc.roundedRect(x, y, pageWidth - margin * 2, rectHeight, 3, 3, 'F');
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setTextColor(120, 120, 120);
-                    
-                    const splitImgText = doc.splitTextToSize(imgText, pageWidth - margin * 4);
-                    doc.text(splitImgText, pageWidth / 2, y + rectHeight / 2, { align: 'center', baseline: 'middle' });
-                    
-                    y += rectHeight + 10;
-                    
-                } else {
-                    let fontSize = 11;
-                    let isBold = false;
-                    let isSubtitle = false;
-
-                    if (text.startsWith('-- ')) {
-                        text = `    • ${text.substring(3)}`;
-                        x += 10;
-                    } else if (text.startsWith('- ')) {
-                        text = `• ${text.substring(2)}`;
-                    } else if (text.startsWith('**') && text.endsWith('**')) {
-                        isBold = true;
-                        text = text.substring(2, text.length - 2);
-                        fontSize = 12;
-                    } else if (text.startsWith('*') && text.endsWith('*')) {
-                        isSubtitle = true;
-                        text = text.substring(1, text.length-1);
-                        fontSize = 12;
-                    }
-
-                    doc.setFontSize(fontSize);
-                    doc.setFont('helvetica', isBold ? 'bold' : 'normal');
-                    doc.setTextColor(isSubtitle ? 100 : 0);
-
-                    const splitText = doc.splitTextToSize(text, pageWidth - margin * 2 - x);
-                    doc.text(splitText, x, y);
-                    y += (splitText.length * 5) + 4;
-                }
-            });
-
-             // Footer
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text(`Slide ${index}`, pageWidth - margin, pageHeight - footerHeight, { align: 'right' });
-        });
-
-        doc.save('Expat_eKYC_Pitch_Deck.pdf');
     };
 
     const handleDownloadManual = () => {
@@ -430,10 +333,6 @@ const BrandManager: React.FC<Props> = ({ onClose }) => {
                     <div>
                         <h3 className="text-lg font-semibold text-[--color-text-header] mb-2">Resources & Analysis</h3>
                         <div className="space-y-2">
-                            <Button variant="secondary" onClick={handleDownloadPitchDeck} className="w-full justify-center">
-                                <PresentationChartBarIcon className="h-5 w-5" />
-                                Download Pitch Deck (PDF)
-                            </Button>
                             <Button variant="secondary" onClick={handleDownloadManual} className="w-full justify-center">
                                 <DownloadIcon className="h-5 w-5" />
                                 Download User Manual (PDF)

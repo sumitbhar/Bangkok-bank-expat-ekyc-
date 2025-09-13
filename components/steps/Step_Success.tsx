@@ -32,7 +32,7 @@ const StepSuccess: React.FC<Props> = ({ logout, formData }) => {
             try {
                doc.addImage(logo, 'PNG', margin, y - 10, 20, 20);
             } catch (e) {
-                console.error("Could not add logo to PDF:", e);
+                // Could not add logo to PDF
             }
         }
         doc.setFontSize(22);
@@ -102,7 +102,6 @@ const StepSuccess: React.FC<Props> = ({ logout, formData }) => {
                     doc.addImage(imageDataUrl, format, margin, y, imgWidth, imgHeight);
                     y += imgHeight + 10;
                 } catch(e) {
-                    console.error("Error adding image to PDF:", e);
                     doc.setFont('helvetica', 'normal');
                     doc.text("Image could not be rendered.", margin, y);
                     y+= 7;

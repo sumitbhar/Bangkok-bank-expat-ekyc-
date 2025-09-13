@@ -52,6 +52,9 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
         if (!localData.dob) {
             newErrors.dob = 'Date of Birth is required.';
             isValid = false;
+        } else if (!/^\d{4}-\d{2}-\d{2}$/.test(localData.dob)) {
+            newErrors.dob = 'Please select a valid date.';
+            isValid = false;
         } else {
             const todayStr = new Date().toISOString().split('T')[0];
             if (localData.dob >= todayStr) {
@@ -71,6 +74,9 @@ const Step1PersonalInfo: React.FC<Props> = ({ nextStep, prevStep, formData, upda
 
         if (!localData.passportExpiry) {
             newErrors.passportExpiry = 'Passport Expiry Date is required.';
+            isValid = false;
+        } else if (!/^\d{4}-\d{2}-\d{2}$/.test(localData.passportExpiry)) {
+            newErrors.passportExpiry = 'Please select a valid date.';
             isValid = false;
         } else {
             const todayStr = new Date().toISOString().split('T')[0];

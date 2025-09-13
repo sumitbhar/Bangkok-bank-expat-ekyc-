@@ -11,7 +11,6 @@ const simulateNetwork = <T,>(data: T): Promise<T> => {
 
 // --- AUTH ---
 export const login = async (username: string): Promise<{ user: User }> => {
-    console.log(`[Backend] Simulating login for ${username}`);
     const user = { username };
     // Use sessionStorage for session-only persistence
     sessionStorage.setItem('ekyc_user', JSON.stringify(user));
@@ -19,7 +18,6 @@ export const login = async (username: string): Promise<{ user: User }> => {
 };
 
 export const logout = async (): Promise<void> => {
-    console.log(`[Backend] Simulating logout`);
     sessionStorage.removeItem('ekyc_user');
     return simulateNetwork(undefined);
 };
@@ -36,7 +34,6 @@ export const getActiveUser = (): User | null => {
 
 // --- APPLICATION DATA ---
 export const loadApplication = async (username: string): Promise<{ data: FormData; step: EKYCStep } | null> => {
-    console.log(`[Backend] Loading application for ${username}`);
     try {
         // Use localStorage for persistent data
         const savedState = localStorage.getItem(`ekyc_app_${username}`);
@@ -45,25 +42,21 @@ export const loadApplication = async (username: string): Promise<{ data: FormDat
         }
         return simulateNetwork(null);
     } catch (e) {
-        console.error("Failed to load application state", e);
         return simulateNetwork(null);
     }
 };
 
 export const saveApplication = async (username: string, state: { data: FormData; step: EKYCStep }): Promise<void> => {
-    console.log(`[Backend] Saving application for ${username} at step ${state.step}`);
     try {
         localStorage.setItem(`ekyc_app_${username}`, JSON.stringify(state));
         // Simulate a quick save, no need for full latency
         return new Promise(resolve => setTimeout(resolve, 200));
     } catch (e) {
-        console.error("Failed to save application state", e);
         throw new Error("Could not save application progress.");
     }
 };
 
 export const submitApplication = async (username: string, formData: FormData): Promise<{ success: boolean; referenceId: string }> => {
-    console.log(`[Backend] Submitting application for ${username}`, formData);
     // In a real backend, this would save to a final database, run checks, send emails, etc.
     
     // Clear the in-progress application after successful submission
@@ -74,6 +67,5 @@ export const submitApplication = async (username: string, formData: FormData): P
 };
 
 export const clearApplicationData = (username: string): void => {
-    console.log(`[Backend] Clearing application data for ${username}`);
     localStorage.removeItem(`ekyc_app_${username}`);
 }

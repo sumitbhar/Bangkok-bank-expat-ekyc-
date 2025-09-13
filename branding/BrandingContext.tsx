@@ -27,7 +27,6 @@ const getInitialState = <T,>(key: string, defaultValue: T): T => {
         const item = window.localStorage.getItem(key);
         return item ? JSON.parse(item) : defaultValue;
     } catch (error) {
-        console.error(`Error reading from localStorage key “${key}”:`, error);
         return defaultValue;
     }
 };
@@ -49,7 +48,7 @@ export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             window.localStorage.setItem('brand:theme', JSON.stringify(theme.name));
             window.localStorage.setItem('brand:textSize', JSON.stringify(textSize));
         } catch (error) {
-            console.error('Error saving to localStorage:', error);
+            // Error saving to localStorage
         }
     }, [bankName, logo, theme, textSize]);
 

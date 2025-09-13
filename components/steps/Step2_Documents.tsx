@@ -17,6 +17,18 @@ interface FileReadResult {
     dataUrl: string;
 }
 
+// A utility to ensure date strings from the AI are valid and in YYYY-MM-DD format.
+const validateAndFormatDate = (dateString: string | undefined | null): string => {
+  if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString.trim())) {
+    const d = new Date(dateString.trim() + 'T00:00:00Z');
+    // Final check for validity (e.g., rejects 2023-13-40)
+    if (!isNaN(d.getTime()) && d.toISOString().startsWith(dateString.trim())) {
+        return dateString.trim();
+    }
+  }
+  return ''; // Return empty string if invalid, forcing user to correct it.
+};
+
 const readFile = (file: File): Promise<FileReadResult> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -51,11 +63,11 @@ const Step2Documents: React.FC<Props> = ({ nextStep, updateFormData }) => {
             updateFormData({
                 documents: { passport: dataUrl },
                 personalInfo: {
-                    fullName: passportData.fullName,
-                    nationality: passportData.nationality,
-                    dob: passportData.dateOfBirth,
-                    passportNumber: passportData.passportNumber,
-                    passportExpiry: passportData.expiryDate,
+                    fullName: passportData.fullName || '',
+                    nationality: passportData.nationality || '',
+                    dob: validateAndFormatDate(passportData.dateOfBirth),
+                    passportNumber: passportData.passportNumber || '',
+                    passportExpiry: validateAndFormatDate(passportData.expiryDate),
                 }
             });
             

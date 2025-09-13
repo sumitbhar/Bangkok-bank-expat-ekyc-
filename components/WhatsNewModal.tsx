@@ -4,7 +4,7 @@ import { CloseIcon } from './icons/CloseIcon';
 import Button from './common/Button';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
 
-const BUILD_VERSION = '2.0.0-prod'; // Change this to show the modal again
+const BUILD_VERSION = '2.1.0-prod'; // Change this to show the modal again
 const LOCAL_STORAGE_KEY = 'ekyc-whats-new-version';
 
 const WhatsNewModal: React.FC = () => {
